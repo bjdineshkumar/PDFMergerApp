@@ -1,0 +1,51 @@
+{
+  "name": "pdf-merge-app",
+  "version": "1.0.0",
+  "description": "An Electron app to merge Resume and Cover Letter PDFs",
+  "main": "main.js",
+  "author": "Dinesh Kumar",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^24.8.8",
+    "electron-builder": "^25.1.8",
+    "electron-packager": "^17.1.2"
+  },
+  "build": {
+    "files": [
+      "backend/**/*",
+      "main.js",
+      "renderer.js",
+      "icon.ico"
+    ],
+    "asarUnpack": [
+      "backend/merge_pdfs.py",
+      "backend/python/**"
+    ],
+    "mac": {
+      "icon": "icon.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        "nsis"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bjdineshkumar/PDFMergerApp.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bjdineshkumar/PDFMergerApp/issues"
+  },
+  "homepage": "https://github.com/bjdineshkumar/PDFMergerApp#readme"
+}

@@ -1,0 +1,78 @@
+/* 🌟 Global Styles */
+body {
+    font-family: "Arial", sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+}
+
+/* 🌟 Container */
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 400px;
+}
+
+/* 🌟 Title */
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* 🌟 Button */
+.button {
+    background: #ff4081;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.button:hover {
+    background: #e0005a;
+}
+
+/* 🌟 Status Message */
+.status {
+    font-size: 14px;
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    display: none; /* ✅ Initially Hidden */
+    text-align: center;
+    min-width: 200px;
+}
+
+
+/* 🌟 Footer */
+footer {
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.8;
+    color: white;
+}
+
+footer a {
+    color: #ffeb3b;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+footer a:hover {
+    color: #ffc107;
+    text-decoration: underline;
+}

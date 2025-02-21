@@ -1,0 +1,5 @@
+pdf-merger-app/
+node_modules/
+dist/
+package-lock.json
+backend/
