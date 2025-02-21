@@ -1,34 +1,35 @@
-name: Build Electron App for macOS
+name: Build macOS App
 
 on:
   push:
     branches:
-      - main  # Runs on every push to the main branch
-  release:
-    types: [created]  # Runs when a new GitHub release is created
+      - main
+  workflow_dispatch:
 
 jobs:
-  build-mac:
-    runs-on: macos-latest  # Runs on GitHub's macOS runner
-    
+  build:
+    runs-on: macos-latest  # ✅ Runs on macOS
+
     steps:
-      - name: Checkout code
+      - name: 🛠️ Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: 🏗️ Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18  # Ensure the correct Node.js version
+          node-version: 18
 
-      - name: Install dependencies
+      - name: 📦 Install Dependencies
         run: npm install
 
-      - name: Build for macOS
-        run: npx electron-builder --mac
+      - name: 🚀 Build macOS App
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # ✅ Uses the GitHub secret
+        run: |
+          npx electron-builder --mac
 
-      - name: Upload macOS Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: macOS-app
-          path: dist/*.dmg
-          retention-days: 5  # Store artifact for 5 days (change as needed)
+      - name: 📤 Upload macOS Build to GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npx electron-builder --mac --publish always
