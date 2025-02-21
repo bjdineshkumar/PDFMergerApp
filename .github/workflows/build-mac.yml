@@ -1,20 +1,20 @@
-name: Build macOS App
+name: Build Electron App for Windows & macOS
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual triggering
 
 jobs:
-  build:
-    runs-on: macos-latest  # ✅ Runs on macOS
+  build-mac:
+    runs-on: macos-latest  # ✅ macOS build
 
     steps:
-      - name: 🛠️ Checkout Code
+      - name: 🛠 Checkout Code
         uses: actions/checkout@v3
 
-      - name: 🏗️ Set up Node.js
+      - name: 🏗 Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -24,7 +24,7 @@ jobs:
 
       - name: 🚀 Build macOS App
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # ✅ Uses the GitHub secret
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # ✅ Uses GitHub secret token
         run: |
           npx electron-builder --mac
 
@@ -33,3 +33,30 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           npx electron-builder --mac --publish always
+
+  build-windows:
+    runs-on: windows-latest  # ✅ Windows build
+
+    steps:
+      - name: 🛠 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🏗 Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 🚀 Build Windows App
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # ✅ Uses GitHub secret token
+        run: |
+          npx electron-builder --win
+
+      - name: 📤 Upload Windows Build to GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npx electron-builder --win --publish always
