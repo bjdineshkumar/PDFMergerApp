@@ -17,6 +17,7 @@
   "build": {
     "asar": false,
     "files": [
+      "frontend/**/*",
       "backend/**/*",
       "main.js",
       "renderer.js",
@@ -48,5 +49,8 @@
   "bugs": {
     "url": "https://github.com/bjdineshkumar/PDFMergerApp/issues"
   },
-  "homepage": "https://github.com/bjdineshkumar/PDFMergerApp#readme"
+  "homepage": "https://github.com/bjdineshkumar/PDFMergerApp#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
