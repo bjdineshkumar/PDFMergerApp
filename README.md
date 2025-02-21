@@ -1,4 +1,4 @@
-```md
+
 # 📄 PDF Merger Tool
 
 PDF Merger Tool is a simple Electron-based application that **merges a Resume and Cover Letter into one PDF**.
@@ -86,9 +86,9 @@ If you're on **Windows**, you can **build a macOS `.dmg` file** using GitHub Act
 ## **📜 License**
 📜 **MIT License** – Free to use and modify.  
 
-👨‍💻 **Created by [Dinesh Kumar](https://www.linkedin.com/in/your-profile/)**  
+👨‍💻 **Created by [Dinesh Kumar](https://www.linkedin.com/in/dinesh-kumar-baalajee-jothi/)**  
 
 ---
 
 ### **🌟 Star the repo if you found this useful! ⭐**
-```
+
