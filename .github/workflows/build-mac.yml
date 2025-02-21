@@ -27,7 +27,8 @@ jobs:
         run: npx electron-builder --mac
 
       - name: Upload macOS Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macOS-app
           path: dist/*.dmg
+          retention-days: 5  # Store artifact for 5 days (change as needed)
