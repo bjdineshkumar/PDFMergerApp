@@ -30,6 +30,6 @@ jobs:
 
       - name: 📤 Upload macOS Build to GitHub Releases
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.PDFTOOLTOKEN }}
         run: |
           npx electron-builder --mac --publish always
