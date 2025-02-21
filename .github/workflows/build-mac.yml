@@ -1,0 +1,33 @@
+name: Build Electron App for macOS
+
+on:
+  push:
+    branches:
+      - main  # Runs on every push to the main branch
+  release:
+    types: [created]  # Runs when a new GitHub release is created
+
+jobs:
+  build-mac:
+    runs-on: macos-latest  # Runs on GitHub's macOS runner
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # Ensure the correct Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build for macOS
+        run: npx electron-builder --mac
+
+      - name: Upload macOS Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: macOS-app
+          path: dist/*.dmg
