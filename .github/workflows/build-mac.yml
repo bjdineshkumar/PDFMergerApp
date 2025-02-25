@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]  # ✅ Build for both macOS & Windows
+        os: [macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -23,34 +23,13 @@ jobs:
         with:
           node-version: 18
 
-      - name: 📥 Install Python in `backend/python/` (Windows Only)
-        if: runner.os == 'Windows'
-        run: |
-          curl -LO https://www.python.org/ftp/python/3.12.0/python-3.12.0-embed-amd64.zip
-          unzip python-3.12.0-embed-amd64.zip -d backend/python
-          echo "Python installed successfully!"
-
-      - name: 🐍 Install Python (macOS)
-        if: runner.os == 'macOS'
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-
-      - name: 📦 Install Python Dependencies (`PyPDF2`)
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install PyPDF2 --target=backend/python/Lib/site-packages
-
-      - name: 📦 Install Node.js Dependencies
-        run: npm install
-
       - name: 🔄 Get Latest Release Version & Increment It
         id: version
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           LATEST_TAG=$(curl -s -H "Authorization: token $GH_PAT" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+          "https://api.github.com/repos/${{ github.repository }}/tags" | jq -r '.[0].name')
 
           if [[ "$LATEST_TAG" == "null" || -z "$LATEST_TAG" ]]; then
             NEW_VERSION="v1.0.0"
@@ -63,8 +42,8 @@ jobs:
             NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
           fi
 
-          echo "New version: $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New version: $NEW_VERSION"
 
       - name: 🏷️ Create or Update GitHub Tag & Release
         env:
@@ -96,14 +75,14 @@ jobs:
       - name: 🚀 Build Electron App (macOS)
         if: runner.os == 'macOS'
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           npx electron-builder --mac
 
       - name: 🚀 Build Electron App (Windows)
         if: runner.os == 'Windows'
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           npx electron-builder --win
 
