@@ -16,6 +16,18 @@
   },
   "build": {
     "asar": false,
+    "extraResources": [
+      {
+        "from": "backend/python/Lib",
+        "to": "app/backend/python/Lib",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "backend/python/Scripts",
+        "to": "app/backend/python/Scripts",
+        "filter": ["**/*"]
+      }
+    ],
     "files": [
       "frontend/**/*",
       "backend/**/*",
