@@ -1,10 +1,10 @@
-name: Build & Release Electron App
+name: Build Electron App
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           LATEST_TAG=$(curl -s -H "Authorization: token $GH_PAT" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+          "https://api.github.com/repos/${{ github.repository }}/tags" | jq -r '.[0].name')
 
           if [[ "$LATEST_TAG" == "null" || -z "$LATEST_TAG" ]]; then
             NEW_VERSION="v1.0.0"
@@ -45,33 +45,6 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "New version: $NEW_VERSION"
 
-      - name: 🏷️ Create or Update GitHub Tag & Release
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions Bot"
-
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
-
-          git fetch --tags
-          if git rev-parse $NEW_VERSION >/dev/null 2>&1; then
-            echo "Tag $NEW_VERSION already exists. Skipping creation."
-          else
-            git tag -a $NEW_VERSION -m "Release $NEW_VERSION"
-            git push origin $NEW_VERSION
-          fi
-
-          curl -X POST -H "Authorization: token $GH_PAT" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/${{ github.repository }}/releases" \
-          -d '{
-            "tag_name": "'"$NEW_VERSION"'",
-            "name": "'"$NEW_VERSION"'",
-            "draft": false,
-            "prerelease": false
-          }' || echo "Release $NEW_VERSION already exists. Skipping creation."
-
       - name: 🚀 Build Electron App (macOS)
         if: runner.os == 'macOS'
         env:
@@ -86,16 +59,16 @@ jobs:
         run: |
           npx electron-builder --win
 
-      - name: 📤 Upload macOS Build to GitHub Releases
+      - name: 📦 Store Build Artifacts (macOS)
         if: runner.os == 'macOS'
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          gh release upload $NEW_VERSION dist/*.dmg --clobber || echo "Upload failed. Release might already contain this file."
+        uses: actions/upload-artifact@v3
+        with:
+          name: macOS-Build
+          path: dist/*.dmg
 
-      - name: 📤 Upload Windows Build to GitHub Releases
+      - name: 📦 Store Build Artifacts (Windows)
         if: runner.os == 'Windows'
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          gh release upload $NEW_VERSION dist/*.exe --clobber || echo "Upload failed. Release might already contain this file."
+        uses: actions/upload-artifact@v3
+        with:
+          name: Windows-Build
+          path: dist/*.exe
