@@ -27,8 +27,8 @@ Thumbs.db
 __pycache__/
 *.pyc
 backend/python/__pycache__/
-backend/python/Lib/
-backend/python/Scripts/
+# backend/python/Lib/
+# backend/python/Scripts/
 
 # VS Code settings (optional)
 .vscode/
