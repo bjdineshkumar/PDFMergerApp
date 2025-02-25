@@ -44,14 +44,42 @@ jobs:
       - name: 📦 Install Node.js Dependencies
         run: npm install
 
-      - name: 🔄 Delete Existing GitHub Tag (Fix Release Issue)
-        shell: bash
+      - name: 🔄 Get Latest Release Version & Increment It
+        id: version
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git fetch --tags
-          if git rev-parse v1.0.0 >/dev/null 2>&1; then
-            git tag -d v1.0.0
-            git push --delete origin v1.0.0
+          LATEST_TAG=$(curl -s -H "Authorization: token $GH_PAT" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+
+          if [[ "$LATEST_TAG" == "null" || -z "$LATEST_TAG" ]]; then
+            NEW_VERSION="v1.0.0"
+          else
+            MAJOR=$(echo $LATEST_TAG | cut -d'.' -f1 | sed 's/v//')
+            MINOR=$(echo $LATEST_TAG | cut -d'.' -f2)
+            PATCH=$(echo $LATEST_TAG | cut -d'.' -f3)
+
+            PATCH=$((PATCH + 1))
+            NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
           fi
+
+          echo "New version: $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: 🏷️ Create or Update GitHub Tag & Release
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+
+          git tag -a $NEW_VERSION -m "Release $NEW_VERSION"
+          git push --tags https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
+
+          curl -X POST -H "Authorization: token $GH_PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/${{ github.repository }}/releases" \
+          -d '{"tag_name": "'"$NEW_VERSION"'", "name": "'"$NEW_VERSION"'", "draft": false, "prerelease": false}'
 
       - name: 🚀 Build Electron App (macOS)
         if: runner.os == 'macOS'
@@ -72,11 +100,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          npx electron-builder --mac --publish always
+          gh release upload $NEW_VERSION dist/*.dmg --clobber
 
       - name: 📤 Upload Windows Build to GitHub Releases
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          npx electron-builder --win --publish always
+          gh release upload $NEW_VERSION dist/*.exe --clobber
