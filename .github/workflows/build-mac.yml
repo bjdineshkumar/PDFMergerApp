@@ -23,13 +23,6 @@ jobs:
         with:
           node-version: 18
 
-      - name: 🔍 Debug Git Authentication
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions Bot"
-          git remote -v
-          git ls-remote --tags origin || echo "❌ Authentication failed!"
-
       - name: 🔄 Get Latest Release Version & Increment It
         id: version
         env:
