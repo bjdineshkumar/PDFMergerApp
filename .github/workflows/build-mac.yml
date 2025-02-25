@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   build-mac:
-    runs-on: macos-latest  # ✅ macOS Build Environment
+    runs-on: macos-latest  # ✅ Run on macOS VM
 
     steps:
       - name: 🛠 Checkout Code
@@ -19,7 +19,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: 📦 Install Dependencies
+      - name: 🐍 Install Python (Required for App)
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install Python Dependencies (PyPDF2, etc.)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install PyPDF2
+
+      - name: 📦 Install Node.js Dependencies
         run: npm install
 
       - name: 🚀 Build macOS App
@@ -46,7 +56,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: 📦 Install Dependencies
+      - name: 🐍 Install Python (Required for App)
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install Python Dependencies (PyPDF2, etc.)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install PyPDF2
+
+      - name: 📦 Install Node.js Dependencies
         run: npm install
 
       - name: 🚀 Build Windows App
