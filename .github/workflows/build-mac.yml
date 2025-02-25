@@ -37,26 +37,35 @@ jobs:
         run: npm install
 
       - name: 🔄 Delete Existing GitHub Tag (Fix Release Issue)
+        shell: bash  # ✅ Ensures this runs correctly on all OS
         run: |
           git tag -d v1.0.0 || true
           git push --delete origin v1.0.0 || true
 
-      - name: 🚀 Build Electron App
+      - name: 🚀 Build Electron App (macOS)
+        if: runner.os == 'macOS'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            npx electron-builder --mac
-          else
-            npx electron-builder --win
-          fi
+          npx electron-builder --mac
 
-      - name: 📤 Upload Build to GitHub Releases
+      - name: 🚀 Build Electron App (Windows)
+        if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            npx electron-builder --mac --publish always
-          else
-            npx electron-builder --win --publish always
-          fi
+          npx electron-builder --win
+
+      - name: 📤 Upload macOS Build to GitHub Releases
+        if: runner.os == 'macOS'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npx electron-builder --mac --publish always
+
+      - name: 📤 Upload Windows Build to GitHub Releases
+        if: runner.os == 'Windows'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npx electron-builder --win --publish always
